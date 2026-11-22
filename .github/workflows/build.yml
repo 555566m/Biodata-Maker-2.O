@@ -1,0 +1,19 @@
+name: Biodata Maker 2.O APK
+on: [push, workflow_dispatch]
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - run: |
+          flutter create --platforms=android --org com.biodata2o .
+          python3 -c 'import pathlib,re; p=pathlib.Path("android/app/src/main/AndroidManifest.xml"); p.write_text(re.sub(r"android:label=\"[^\"]*\"","android:label=\"Biodata Maker 2.O\"",p.read_text()))'
+      - run: flutter pub get && flutter build apk --release --split-per-abi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Biodata-Maker-2.O
+          path: build/app/outputs/flutter-apk/*.apk
+          
